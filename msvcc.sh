@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/sh
 
 # ***** BEGIN LICENSE BLOCK *****
 # Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -45,7 +45,7 @@
 args_orig=$@
 args="-nologo -W3"
 linkargs=
-crtlib=MSVCRT
+crtlib=UCRT
 debug_crt=
 cl="cl"
 ml="ml"
@@ -138,12 +138,7 @@ do
     ;;
     -DUSE_STATIC_RTL)
       # Link against static CRT.
-      crtlib=LIBCMT
-      shift 1
-    ;;
-    -DUSE_UCRTL)
-      # Link against static CRT.
-      crtlib=UCRT
+      crtlib=LIBUCRT
       shift 1
     ;;
     -DUSE_DEBUG_RTL)
