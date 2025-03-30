@@ -45,7 +45,7 @@
 args_orig=$@
 args="-nologo -W3"
 linkargs=
-static_crt=
+crtlib=MSVCRT
 debug_crt=
 cl="cl"
 ml="ml"
@@ -138,7 +138,12 @@ do
     ;;
     -DUSE_STATIC_RTL)
       # Link against static CRT.
-      static_crt=1
+      crtlib=LIBCMT
+      shift 1
+    ;;
+    -DUSE_UCRTL)
+      # Link against static CRT.
+      crtlib=UCRT
       shift 1
     ;;
     -DUSE_DEBUG_RTL)
@@ -272,6 +277,12 @@ do
   esac
 done
 
+if [ -n "$debug_crt" ]; then
+    crtlib="${crtlib}d"
+fi
+
+args="$args $crtlib.lib"
+
 if [ -n "$linkargs" ]; then
 
     # If -Zi is specified, certain optimizations are implicitly disabled
@@ -284,15 +295,7 @@ if [ -n "$linkargs" ]; then
     args="$args -link $linkargs"
 fi
 
-if [ -n "$static_crt" ]; then
-    md=-MT
-else
-    md=-MD
-fi
 
-if [ -n "$debug_crt" ]; then
-    md="${md}d"
-fi
 
 if [ -n "$assembly" ]; then
     if [ -z "$outdir" ]; then
@@ -332,7 +335,7 @@ if [ -n "$assembly" ]; then
     # required to fix ml64 broken output?
     #mv *.obj $outdir
 else
-    args="$md $args"
+    args="$args"
 
     if test -n "$verbose"; then
       echo "$cl $args"
